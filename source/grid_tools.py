@@ -50,13 +50,19 @@ def _create_meshio_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-def _locate_file(basename):
+def _locate_file(basename, directory):
     """Locate a file in the current directory.
     """
+    
+    if basename in os.listdir(directory):
+        return os.path.join(directory, basename)
+    
     file_extension = path.splitext(basename)[1]
-    files = glob.glob("../*/*/*" + file_extension, recursive=True)
+    files = glob.glob("./*" + file_extension, recursive=True)
     files += glob.glob("./*/*" + file_extension, recursive=True)
     files += glob.glob("./*/*/*" + file_extension, recursive=True)
+    # the path ./../*/*/* is required when tests are executed from test directory
+    files += glob.glob("./../*/*/*" + file_extension, recursive=True)
     file = None
     for f in files:
         if basename in f:
@@ -81,7 +87,7 @@ def generate_xdmf_mesh(geo_file):
     assert path.splitext(geo_file)[1] == '.geo'
     basename = path.basename(geo_file)
     # generate msh file
-    msh_file = _locate_file(basename.replace(".geo", ".msh"))
+    msh_file = _locate_file(basename.replace(".geo", ".msh"), os.path.dirname(basename))
     if msh_file is None:
         try: # pragma: no cover
             subprocess.run(["gmsh", geo_file, "-3"], check=True)
