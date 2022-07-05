@@ -87,7 +87,7 @@ def generate_xdmf_mesh(geo_file):
     assert path.splitext(geo_file)[1] == '.geo'
     basename = path.basename(geo_file)
     # generate msh file
-    msh_file = _locate_file(basename.replace(".geo", ".msh"), os.path.dirname(basename))
+    msh_file = _locate_file(basename.replace(".geo", ".msh"), os.path.dirname(geo_file))
     if msh_file is None:
         try: # pragma: no cover
             subprocess.run(["gmsh", geo_file, "-3"], check=True)
