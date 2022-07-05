@@ -50,11 +50,11 @@ def _create_meshio_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-def _locate_file(basename, directory):
+def _locate_file(basename, directory=None):
     """Locate a file in the current directory.
     """
     
-    if basename in os.listdir(directory):
+    if directory and basename in os.listdir(directory):
         return os.path.join(directory, basename)
     
     file_extension = path.splitext(basename)[1]
