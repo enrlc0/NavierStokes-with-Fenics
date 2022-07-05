@@ -386,9 +386,13 @@ def _extract_facet_markers(geo_filename):
     return facet_markers
 
 
-def _locate_file(basename):
+def _locate_file(basename, directory=None):
     """Locate a file in the current directory.
     """
+    
+    if directory and basename in os.listdir(directory):
+        return os.path.join(directory, basename)
+    
     file_extension = path.splitext(basename)[1]
     files = glob.glob("./*" + file_extension, recursive=True)
     files += glob.glob("./*/*" + file_extension, recursive=True)
@@ -411,12 +415,12 @@ def _read_external_mesh(basename):
     # locate geo file
     assert isinstance(basename, str)
     assert basename.endswith(".geo")
-    geo_file = _locate_file(basename)
+    geo_file = _locate_file(basename, os.path.dirname(basename))
     assert geo_file is not None
     facet_marker_map = _extract_facet_markers(geo_file)
     # define xdmf files
-    xdmf_file = _locate_file(basename.replace(".geo", ".xdmf"))
-    xdmf_facet_marker_file = _locate_file(basename.replace(".geo", "_facet_markers.xdmf"))
+    xdmf_file = _locate_file(basename.replace(".geo", ".xdmf"), os.path.dirname(geo_file))
+    xdmf_facet_marker_file = _locate_file(basename.replace(".geo", "_facet_markers.xdmf"), os.path.dirname(geo_file))
     # check if xdmf files exist
     if xdmf_file is None or xdmf_facet_marker_file is None:
         from grid_tools import generate_xdmf_mesh
